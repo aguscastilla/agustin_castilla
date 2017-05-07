@@ -2,56 +2,66 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// TODO: Crea dos macros con el tamaño horizontal y vertical del mundo
+// Crea dos macros con el tamaño horizontal y vertical del mundo
 
-void world_init(/* Recibo un mundo */);
-void world_print(/* Recibo un mundo */);
-void world_step(/* Recibo dos mundos */);
-int world_count_neighbors(/* Recibo un mundo y unas coordenadas */);
-bool world_get_cell(/* Recibo un mundo y unas coordenadas */);
-void world_copy(/* Recibo dos mundos */);
+#define TAMX 20
+#define TAMY 20
+
+void world_init (bool m[TAMX][TAMY]);
+void world_print (bool m[TAMX][TAMY]);
+void world_step ();
+int  world_count_neighbors();
+bool world_get_cell();
+void world_copy ();
 
 int main()
 {
 	int i = 0;
-	// TODO: Declara dos mundos
+	//  Declara dos mundos
+    bool world_a[TAMX][TAMY]; 
+    bool world_b[TAMX][TAMY];
 
-	// TODO: inicializa el mundo
-	do {
+	// inicializa el mundo
+    world_init(world_a);
+	
+    do {
 		printf("\033cIteration %d\n", i++);
-		// TODO: Imprime el mundo
-		// TODO: Itera
+		// Imprime el mundo
+    world_print (world_a);
+
+		//  Itera
+    
 	} while (getchar() != 'q');
 
 	return EXIT_SUCCESS;
 }
 
-void world_init(/* Recibo un mundo */)
+void world_init(bool w[TAMX][TAMY])
 {
-	// TODO: Poner el mundo a false
+	// Poner el mundo a false
+    for (int i=0; i<TAMX; i++)  
+	   for (int j=0; j<TAMY; j++)
+		  w[i][j] = false ; 
 
-	/* TODO: Inicializar con el patrón del glider:
-	 *           . # .
-	 *           . . #
-	 *           # # #
-	 */
+	// Inicializar con el patrón del glider:
+    w[0][1] = true ;             
+	w[1][2] = true ;
+	w[2][0] = true ;
+	w[2][1] = true ;
+	w[2][2] = true ; 
+	 
 }
 
-void world_print(/* Recibo un mundo */)
+void world_print(bool w[TAMX][TAMY])
 {
-	// TODO: Imprimir el mundo por consola. Sugerencia:
-	/*
-	 *     . # . . . . . . . .
-	 *     . . # . . . . . . .
-	 *     # # # . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 *     . . . . . . . . . .
-	 */
+	// Imprimir el mundo por consola. Sugerencia:
+	for (int i=0; i<TAMX; i++){
+	    for (int j=0; j<TAMY; j++) {
+	    
+		  if (w[i][j] == true) printf(" #");
+	      else printf(" .");       }    
+	  printf("\n");             }  
+	   printf("\n");
 }
 
 void world_step(/* Recibo dos mundos */)
