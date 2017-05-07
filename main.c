@@ -55,7 +55,7 @@ void world_init(bool w[TAMX][TAMY])
 void world_print(bool w[TAMX][TAMY])
 {
 	// Imprimir el mundo por consola. Sugerencia:
-	for (int i=0; i<TAMX; i++){
+	for (int i=0; i<TAMX; i++)  {
 	    for (int j=0; j<TAMY; j++) {
 	    
 		  if (w[i][j] == true) printf(" #");
