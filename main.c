@@ -4,8 +4,8 @@
 
 // Crea dos macros con el tamaño horizontal y vertical del mundo
 
-#define TAMX 20
-#define TAMY 20
+#define TAMX 15
+#define TAMY 15
 
 void world_init (bool m[TAMX][TAMY]);
 void world_print (bool m[TAMX][TAMY]);
