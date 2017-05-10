@@ -1,97 +1,131 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
+
 // Crea dos macros con el tamaño horizontal y vertical del mundo
 
-#define TAMX 15
-#define TAMY 15
+#define TAMX 10
+#define TAMY 10
 
-void world_init (bool m[TAMX][TAMY]);
-void world_print (bool m[TAMX][TAMY]);
-void world_step ();
-int  world_count_neighbors();
-bool world_get_cell();
-void world_copy ();
+void world_init (bool m[TAMX+2][TAMY+2]);
+void world_prin (bool m[TAMX+2][TAMY+2]);
+bool world_get_cell(bool m[TAMX+2][TAMY+2],int x,int y);
+int  world_count_neighbors(bool m[TAMX+2][TAMY+2],int x,int y);
+void world_step (bool m[TAMX+2][TAMY+2],bool n[TAMX+2][TAMY+2]);
+void world_copy (bool m[TAMX+2][TAMY+2], bool n[TAMX+2][TAMY+2]);
 
 int main()
 {
-	int i = 0;
-	//  Declara dos mundos
-    bool world_a[TAMX][TAMY]; 
-    bool world_b[TAMX][TAMY];
-
-	// inicializa el mundo
-    world_init(world_a);
 	
-    do {
-		printf("\033cIteration %d\n", i++);
-		// Imprime el mundo
-    world_print (world_a);
-
-		//  Itera
+	// Declara dos mundos
+    bool world_a[TAMX+2][TAMY+2]; 
+    bool world_b[TAMX+2][TAMY+2];
+	
+    // inicializa el mundo_a
+    world_init ( world_a);
+    world_init ( world_b);
     
-	} while (getchar() != 'q');
-
-	return EXIT_SUCCESS;
+    int i=0;
+    do {
+		 printf("\033cIteration %d\n", i++);
+		 
+		 //imprimir mundo_a
+         world_prin ( world_a);
+	     
+	     // Recorrer el mundo célula por célula 
+	     world_step ( world_a,world_b );
+	     
+	   } while  (getchar() != 'q');  
+	            
+	   return EXIT_SUCCESS ;
 }
 
-void world_init(bool w[TAMX][TAMY])
+void world_step (bool world_a[TAMX+2][TAMY+2],bool world_b[TAMX+2][TAMY+2])
 {
-	// Poner el mundo a false
-    for (int i=0; i<TAMX; i++)  
-	   for (int j=0; j<TAMY; j++)
-		  w[i][j] = false ; 
-
-	// Inicializar con el patrón del glider:
-    w[0][1] = true ;             
-	w[1][2] = true ;
-	w[2][0] = true ;
-	w[2][1] = true ;
-	w[2][2] = true ; 
+	// Recorrer el mundo célula por célula 
 	 
+	 bool std_cel ;
+	 for (int i=1; i<=TAMX; i++) 
+            for (int j=1; j<=TAMY; j++)
+               {
+				// pedir imprimir estado de la celula 
+	            std_cel = world_get_cell(world_a, i,j); 
+		            
+		        // contar las celulas vecinas vivas
+	            int cont=0;
+	            cont = world_count_neighbors(world_a,i,j);
+	             
+	            //celula nace con con tres vecinas vivas
+	            if ((std_cel == false) && (cont == 3)) world_b[i][j] = true; 
+	            else 
+	            // celula viva con 2 o 3 vecinas vivas sigue viva
+	            if ((std_cel == true) && ((cont == 2)||(cont == 3))) world_b[i][j] = true;
+	            else world_b[i][j] = false; 
+	           }
+			 // Copiar el mundo auxiliar sobre el mundo principal
+	         world_copy (world_a, world_b);    
 }
 
-void world_print(bool w[TAMX][TAMY])
+//Definicin funcion inicializar mundo
+void world_init (bool w[TAMX+2][TAMY+2])
+	  {
+	  for (int i=0; i<TAMX+2; i++)     // inizializar a false
+	   for (int j=0; j<TAMY+2; j++)
+		  w[i][j] = false ; 
+		  
+	  w[1][2] = true ;              // inicializar glade
+	  w[2][3] = true ;
+	  w[3][1] = true ;
+	  w[3][2] = true ;
+	  w[3][3] = true ; 
+	  }    
+
+//Definicion funcion imprimir mundo	  
+void world_prin (bool w[TAMX+2][TAMY+2])
 {
-	// Imprimir el mundo por consola. Sugerencia:
-	for (int i=0; i<TAMX; i++)  {
-	    for (int j=0; j<TAMY; j++) {
+	for (int i=1; i<=TAMX; i++){
+	    for (int j=1; j<=TAMY; j++) {
 	    
 		  if (w[i][j] == true) printf(" #");
 	      else printf(" .");       }    
 	  printf("\n");             }  
-	   printf("\n");
+	   printf("\n");  
+} 
+ 
+ //devuelve el estado de la posicion indicada    
+bool world_get_cell(bool w[TAMX+2][TAMY+2], int x, int y)
+ {
+	 bool std = w[x][y];
+	 return std;
+ }
+	 
+//imprime el numero de celulas vecinas vivas
+int  world_count_neighbors (bool w[TAMX+2][TAMY+2],int x,int y)
+ {  
+	int cont = 0;
+    if(world_get_cell (w, x-1, y-1)) cont++;
+    if(world_get_cell (w, x-1,  y )) cont++;
+	if(world_get_cell (w, x-1, y+1)) cont++;
+	
+	if(world_get_cell (w, x,   y-1)) cont++;
+	if(world_get_cell (w, x,   y+1)) cont++;
+	
+	if(world_get_cell (w, x+1, y-1)) cont++;
+	if(world_get_cell (w, x+1,  y )) cont++;
+	if(world_get_cell (w, x+1, y+1)) cont++;
+	
+	return cont;
 }
 
-void world_step(/* Recibo dos mundos */)
+void world_copy(bool world_a[TAMX+2][TAMY+2], bool world_b[TAMX+2][TAMY+2])
 {
-	/*
-	 * TODO:
-	 * - Recorrer el mundo célula por célula comprobando si nace, sobrevive
-	 *   o muere.
-	 *
-	 * - No se puede cambiar el estado del mundo a la vez que se recorre:
-	 *   Usar un mundo auxiliar para guardar el siguiente estado.
-	 *
-	 * - Copiar el mundo auxiliar sobre el mundo principal
-	 */
-}
+	// copia el mundo segundo mundo sobre el primero
+	for (int i=0; i<TAMX+2; i++)
+	  for (int j=0; j<TAMY+2; j++) 
+	   
+			world_a[i][j] = world_b[i][j] ;
+} 
 
-int world_count_neighbors(/* Recibo un mundo y unas coordenadas */)
-{
-	// Devuelve el número de vecinos
-}
 
-bool world_get_cell(/* Recibo un mundo y unas coordenadas */)
-{
-	/*
-	 * TODO: Devuelve el estado de la célula de posición indicada
-	 * (¡cuidado con los límites del array!)
-	 */
-}
-
-void world_copy(/* Recibo dos mundos */)
-{
-	// TODO: copia el mundo segundo mundo sobre el primero
-}
